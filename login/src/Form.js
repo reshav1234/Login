@@ -1,43 +1,40 @@
-import React from 'react';
-import { useForm } from 'react-hook-form';
-import {yupResolver} from '@hookform/resolvers/yup'
-import *as yup from 'yup';
+import React, { useState } from 'react';
 
 const Form = () =>
 {
-    // Setting how our data should look like
-    const schema = yup.object().shape({
-        fullname: yup.string().email().required("Your full name is required."), 
-        email: yup.string().positive().integer().min(18).required(),
-        age: yup.number().required(),
-        password: yup.string().min(4).max(20).required(),
-        confirmpassword: yup.string().oneOf([yup.ref("password"), null],"Password do not match.").required()
-    })
+    // We use state to track input values
+    const [input, setInput] = useState({});
 
-    const { register, handleSubmit, formState: {errors} } = useForm({
-        resolver: yupResolver(schema)
-    })
-
-    const onSubmit = (data) =>
+    // Event handler
+    const handleSubmit = (event) =>
     {
-        console.log(data);
+        event.preventDefault()
+        console.log("The name you entered is", input)
+    } 
+
+    //
+    const handleChange = (event) =>
+    {
+        const name = event.target.name;
+        const value  = event.target.value;
+        setInput(values =>({...values, [name]: value}))
     }
 
+
     return(
-    <form onSubmit = {handleSubmit(onSubmit)}>
-        <input type = "text" placeholder = "Full Name..." {...register("fullname")} />
-        <p>{errors.fullname?.message}</p>
-        <input type = "text" placeholder = "Email..." {...register("email")}/>
-        <p>{errors.email?.message}</p> 
-        <input type = "text" placeholder = "Age..." {...register("age")}/>
-        <p>{errors.age?.message}</p>
-        <input type = "password" placeholder = "Password..." {...register("password")}/>
-        <p>{errors.password?.message}</p>
-        <input type = "password" placeholder = "Confirn passoword..." {...register("confirmpassword")}/>
-        <p>{errors.confirmpassword?.message}</p>
-        <input type = "submit" />
-    </form>
-  )
+        <form onSubmit={handleSubmit}>
+            <label>Enter your name:
+                <input type = "text" name = "username" value = {input.username} onChange = {handleChange} />
+            </label>
+            <label>Enter your age:
+                <input type = "number" name = "age" value = {input.age} onChange = {handleChange} />
+            </label>
+            <label>Enter your Email 
+                <input type ="email" name = "email" value = {input.email} onChange = {handleChange} />
+            </label>
+            <button>Submit</button>
+        </form>
+    )
 }
 
 export default Form
